@@ -20,28 +20,27 @@ package com.alibaba.datax.plugin.writer.selectdbwriter;
 import java.io.IOException;
 import java.util.Map;
 
-public class DorisWriterExcetion extends IOException {
+public class DorisWriterExcetion extends RuntimeException  {
 
-    private final Map<String, Object> response;
-    private boolean reCreateLabel;
+    public DorisWriterExcetion() {
+        super();
+    }
 
-
-    public DorisWriterExcetion ( String message, Map<String, Object> response) {
+    public DorisWriterExcetion(String message) {
         super(message);
-        this.response = response;
     }
 
-    public DorisWriterExcetion ( String message, Map<String, Object> response, boolean reCreateLabel) {
-        super(message);
-        this.response = response;
-        this.reCreateLabel = reCreateLabel;
+    public DorisWriterExcetion(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public Map<String, Object> getFailedResponse() {
-        return response;
+    public DorisWriterExcetion(Throwable cause) {
+        super(cause);
     }
 
-    public boolean needReCreateLabel() {
-        return reCreateLabel;
+    protected DorisWriterExcetion(String message, Throwable cause,
+                             boolean enableSuppression,
+                             boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

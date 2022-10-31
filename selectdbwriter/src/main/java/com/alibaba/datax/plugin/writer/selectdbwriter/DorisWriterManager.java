@@ -39,18 +39,18 @@ public class DorisWriterManager {
 
     private final DorisCopyIntoObserver visitor;
     private final Keys options;
-    private final List<byte[]> buffer = new ArrayList<> ();
+    private final List<byte[]> buffer = new ArrayList<>();
     private int batchCount = 0;
     private long batchSize = 0;
     private volatile boolean closed = false;
     private volatile Exception flushException;
-    private final LinkedBlockingDeque< WriterTuple > flushQueue;
+    private final LinkedBlockingDeque<WriterTuple> flushQueue;
     private ScheduledExecutorService scheduler;
     private ScheduledFuture<?> scheduledFuture;
 
-    public DorisWriterManager( Keys options) {
+    public DorisWriterManager(Keys options) {
         this.options = options;
-        this.visitor = new DorisCopyIntoObserver (options);
+        this.visitor = new DorisCopyIntoObserver(options);
         flushQueue = new LinkedBlockingDeque<>(options.getFlushQueueLength());
         this.startScheduler();
         this.startAsyncFlushing();
@@ -97,7 +97,7 @@ public class DorisWriterManager {
                 flush(label, false);
             }
         } catch (Exception e) {
-            throw new IOException("Writing records to Doris failed.", e);
+            throw new DorisWriterExcetion("Writing records to Doris failed.", e);
         }
     }
 
@@ -109,7 +109,7 @@ public class DorisWriterManager {
             }
             return;
         }
-        flushQueue.put(new WriterTuple (label, batchSize,  new ArrayList<>(buffer)));
+        flushQueue.put(new WriterTuple(label, batchSize, new ArrayList<>(buffer)));
         if (waitUtilDone) {
             // wait the last flush
             waitAsyncFlushingDone();
@@ -119,7 +119,7 @@ public class DorisWriterManager {
         batchSize = 0;
     }
 
-    public synchronized void close() {
+    public synchronized void close() throws IOException {
         if (!closed) {
             closed = true;
             try {
@@ -129,6 +129,8 @@ public class DorisWriterManager {
                 flush(label, true);
             } catch (Exception e) {
                 throw new RuntimeException("Writing records to Selectdb failed.", e);
+            } finally {
+                this.visitor.close();
             }
         }
         checkFlushException();
@@ -136,7 +138,7 @@ public class DorisWriterManager {
 
     public String createBatchLabel() {
         StringBuilder sb = new StringBuilder();
-        if (! Strings.isNullOrEmpty(options.getLabelPrefix())) {
+        if (!Strings.isNullOrEmpty(options.getLabelPrefix())) {
             sb.append(options.getLabelPrefix());
         }
         return sb.append(UUID.randomUUID().toString())
@@ -145,9 +147,9 @@ public class DorisWriterManager {
 
     private void startAsyncFlushing() {
         // start flush thread
-        Thread flushThread = new Thread(new Runnable(){
+        Thread flushThread = new Thread(new Runnable() {
             public void run() {
-                while(true) {
+                while (true) {
                     try {
                         asyncFlush();
                     } catch (Exception e) {
@@ -163,7 +165,7 @@ public class DorisWriterManager {
     private void waitAsyncFlushingDone() throws InterruptedException {
         // wait previous flushings
         for (int i = 0; i <= options.getFlushQueueLength(); i++) {
-            flushQueue.put(new WriterTuple ("", 0l, null));
+            flushQueue.put(new WriterTuple("", 0l, null));
         }
         checkFlushException();
     }
@@ -185,16 +187,16 @@ public class DorisWriterManager {
                 if (i >= options.getMaxRetries()) {
                     throw new IOException(e);
                 }
-                if (e instanceof DorisWriterExcetion && (( DorisWriterExcetion )e).needReCreateLabel()) {
+                if (e instanceof RuntimeException) {
                     String newLabel = createBatchLabel();
                     LOG.warn(String.format("Batch label changed from [%s] to [%s]", flushData.getLabel(), newLabel));
                     flushData.setLabel(newLabel);
                 }
                 try {
-                    Thread.sleep(1000l * Math.min(i + 1, 10));
+                    Thread.sleep(1000l * Math.min(i + 1, 100));
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
-                    throw new IOException("Unable to flush, interrupted while doing another attempt", e);
+                    throw new DorisWriterExcetion("Unable to flush, interrupted while doing another attempt", e);
                 }
             }
         }

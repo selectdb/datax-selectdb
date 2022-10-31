@@ -142,7 +142,7 @@ public class DorisCopyIntoObserver {
         if (statusCode != 200) {
             String result = response.getEntity() == null ? null : EntityUtils.toString(response.getEntity());
             LOG.error("upload file {} error, response {}", fileName, result);
-            throw new RuntimeException("upload file error: " + fileName);
+            throw new DorisWriterExcetion("upload file error: " + fileName);
         }
     }
 
@@ -194,14 +194,14 @@ public class DorisCopyIntoObserver {
         String loadResult = "";
         if (statusCode != 200) {
             LOG.warn("commit failed with status {} {}, reason {}", statusCode, hostPort, reasonPhrase);
-            throw new RuntimeException("commit error with file: " + fileName);
+            throw new DorisWriterExcetion("commit error with file: " + fileName);
         } else if (response.getEntity() != null){
             loadResult = EntityUtils.toString(response.getEntity());
             boolean success = handleCommitResponse(loadResult);
             if(success){
                 LOG.info("commit success cost {}ms, response is {}", System.currentTimeMillis() - start, loadResult);
             }else{
-                throw new RuntimeException("commit fail");
+                throw new DorisWriterExcetion("commit fail");
             }
         }
     }
@@ -230,5 +230,17 @@ public class DorisCopyIntoObserver {
 
     public static boolean isCommitted(String msg) {
         return COMMITTED_PATTERN.matcher(msg).matches();
+    }
+
+
+    public void close() throws IOException {
+        if (null != httpClient) {
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                LOG.error("Closing httpClient failed.", e);
+                throw new RuntimeException("Closing httpClient failed.", e);
+            }
+        }
     }
 }

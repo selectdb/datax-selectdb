@@ -58,6 +58,8 @@ public class Keys implements Serializable {
 
     private static final long DEFAULT_MAX_BATCH_SIZE = 90 * 1024 * 1024; //default 90M
 
+    private static final String CLUSTER_NAME = "clusterName";
+
     private final Configuration options;
 
     private List<String> infoSchemaColumns;
@@ -95,6 +97,10 @@ public class Keys implements Serializable {
 
     public String getPassword() {
         return options.getString(PASSWORD);
+    }
+
+    public String getClusterName(){
+        return options.getString(CLUSTER_NAME);
     }
 
     public String getLabelPrefix() {
@@ -156,6 +162,7 @@ public class Keys implements Serializable {
         Integer len = options.getInt(FLUSH_QUEUE_LENGTH);
         return null == len ? 1 : len;
     }
+
 
     public StreamLoadFormat getStreamLoadFormat() {
         Map<String, Object> loadProps = getLoadProps();

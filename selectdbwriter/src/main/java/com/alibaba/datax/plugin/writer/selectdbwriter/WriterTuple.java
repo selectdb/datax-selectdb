@@ -24,6 +24,7 @@ public class WriterTuple {
     private Long bytes;
     private List<byte[]> rows;
 
+
     public WriterTuple ( String label, Long bytes, List<byte[]> rows){
         this.label = label;
         this.rows = rows;
@@ -34,4 +35,5 @@ public class WriterTuple {
     public void setLabel(String label) { this.label = label; }
     public Long getBytes() { return bytes; }
     public List<byte[]> getRows() { return rows; }
+
 }

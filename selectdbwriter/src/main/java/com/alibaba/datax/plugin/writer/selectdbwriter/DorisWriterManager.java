@@ -185,9 +185,9 @@ public class DorisWriterManager {
             } catch (Exception e) {
                 LOG.warn("Failed to flush batch data to Doris, retry times = {}", i, e);
                 if (i >= options.getMaxRetries()) {
-                    throw new IOException(e);
+                    throw new RuntimeException(e);
                 }
-                if (e instanceof RuntimeException) {
+                if (e instanceof DorisWriterExcetion) {
                     String newLabel = createBatchLabel();
                     LOG.warn(String.format("Batch label changed from [%s] to [%s]", flushData.getLabel(), newLabel));
                     flushData.setLabel(newLabel);
@@ -196,7 +196,7 @@ public class DorisWriterManager {
                     Thread.sleep(1000l * Math.min(i + 1, 100));
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
-                    throw new DorisWriterExcetion("Unable to flush, interrupted while doing another attempt", e);
+                    throw new RuntimeException("Unable to flush, interrupted while doing another attempt", e);
                 }
             }
         }

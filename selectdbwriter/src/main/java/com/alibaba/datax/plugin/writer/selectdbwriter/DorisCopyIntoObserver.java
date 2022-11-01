@@ -19,6 +19,7 @@ package com.alibaba.datax.plugin.writer.selectdbwriter;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -68,7 +69,7 @@ public class DorisCopyIntoObserver {
     public void streamLoad(WriterTuple data) throws Exception {
         String host = getLoadHost();
         if (host == null) {
-            throw new IOException("load_url cannot be empty, or the host cannot connect.Please check your configuration.");
+            throw new RuntimeException("load_url cannot be empty, or the host cannot connect.Please check your configuration.");
         }
         String loadUrl = String.format(UPLOAD_URL_PATTERN, host);
         String uploadAddress = getUploadAddress(loadUrl, data.getLabel());
@@ -183,6 +184,9 @@ public class DorisCopyIntoObserver {
         LOG.info("build copy SQL is {}", copySQL);
         Map<String,String> params = new HashMap<>();
         params.put("sql", copySQL);
+        if(StringUtils.isNotBlank(options.getClusterName())){
+            params.put("cluster",options.getClusterName());
+        }
         HttpPostBuilder postBuilder = new HttpPostBuilder();
         postBuilder.setUrl(String.format(COMMIT_PATTERN, hostPort))
             .baseAuth(options.getUsername(), options.getPassword())

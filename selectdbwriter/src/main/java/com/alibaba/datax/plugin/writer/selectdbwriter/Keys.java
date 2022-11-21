@@ -54,7 +54,7 @@ public class Keys implements Serializable {
     private static final String FLUSH_QUEUE_LENGTH = "flushQueueLength";
     private static final String LOAD_PROPS = "loadProps";
 
-    private static final String DEFAULT_LABEL_PREFIX = "datax_doris_writer_";
+    private static final String DEFAULT_LABEL_PREFIX = "datax_select_writer_";
 
     private static final long DEFAULT_MAX_BATCH_SIZE = 90 * 1024 * 1024; //default 90M
 

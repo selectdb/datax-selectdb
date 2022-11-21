@@ -34,7 +34,7 @@ SelectdbWriter 通过调用selectdb api （/copy/upload），返回一个重定�
 i. 单独编译 selectdbwriter 插件:
 
    ```text
-     mvn clean install -pl plugin-rdbms-util,doriswriter -DskipTests
+     mvn clean install -pl plugin-rdbms-util,selectdbwriter -DskipTests
    ```
 
 
@@ -312,37 +312,38 @@ c.再次尝试编译。
 
 ### 3.2 参数说明
 
-* **jdbcUrl**
+```text
+ **jdbcUrl**
 
-    - 描述：Doris 的 JDBC 连接串，用户执行 preSql 或 postSQL。
+    - 描述：selectdb 的 JDBC 连接串，用户执行 preSql 或 postSQL。
     - 必选：是
     - 默认值：无
 
 * **loadUrl**
 
-    - 描述：作为 Stream Load 的连接目标。格式为 "ip:port"。其中 IP 是 FE 节点 IP，port 是 FE 节点的 http_port。可以填写多个，多个之间使用英文状态的分号隔开:`;`，doriswriter 将以轮询的方式访问。
+    - 描述：作为 selecdb 的连接目标。格式为 "ip:port"。其中 IP 是 selectdb的private-link，port 是selectdb 集群的 http_port
     - 必选：是
     - 默认值：无
 
 * **username**
 
-    - 描述：访问Doris数据库的用户名
+    - 描述：访问selectdb数据库的用户名
     - 必选：是
     - 默认值：无
 
 * **password**
 
-    - 描述：访问Doris数据库的密码
+    - 描述：访问selectdb数据库的密码
     - 必选：否
     - 默认值：空
 
 * **connection.selectedDatabase**
-    - 描述：需要写入的Doris数据库名称。
+    - 描述：需要写入的selectdb数据库名称。
     - 必选：是
     - 默认值：无
 
 * **connection.table**
-    - 描述：需要写入的Doris表名称。
+    - 描述：需要写入的selectdb表名称。
         - 必选：是
         - 默认值：无
 
@@ -387,7 +388,7 @@ c.再次尝试编译。
 
     - 描述：每批次上传文件的 label 前缀。最终的 label 将有 `labelPrefix + UUID` 组成全局唯一的 label，确保数据不会重复导入
     - 必选：否
-    - 默认值：`datax_doris_writer_`
+    - 默认值：`datax_select_writer_`
 
 * **loadProps**
 
@@ -417,11 +418,12 @@ c.再次尝试编译。
 
 * **flushInterval**
 
-  - 描述：task scheduler间隔时间
+  - 描述：数据写入批次的时间间隔，如果maxBatchRows 和 batchSize 参数设置的有很大，那么很可能达不到你这设置的数据量大小，会执行导入。
 
   - 必选：否
 
   - 默认值：30000ms
+```
 
 ### 类型转换
 

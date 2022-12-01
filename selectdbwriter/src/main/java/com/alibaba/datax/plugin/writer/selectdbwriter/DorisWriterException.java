@@ -17,30 +17,40 @@
 
 package com.alibaba.datax.plugin.writer.selectdbwriter;
 
-import java.io.IOException;
-import java.util.Map;
 
-public class DorisWriterExcetion extends RuntimeException  {
+public class DorisWriterException extends RuntimeException {
 
-    public DorisWriterExcetion() {
+    private boolean reCreateLabel;
+
+
+    public DorisWriterException() {
         super();
     }
 
-    public DorisWriterExcetion(String message) {
+    public DorisWriterException(String message) {
         super(message);
     }
 
-    public DorisWriterExcetion(String message, Throwable cause) {
+    public DorisWriterException(String message, boolean reCreateLabel) {
+        super(message);
+        this.reCreateLabel = reCreateLabel;
+    }
+
+    public DorisWriterException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public DorisWriterExcetion(Throwable cause) {
+    public DorisWriterException(Throwable cause) {
         super(cause);
     }
 
-    protected DorisWriterExcetion(String message, Throwable cause,
-                             boolean enableSuppression,
-                             boolean writableStackTrace) {
+    protected DorisWriterException(String message, Throwable cause,
+                                   boolean enableSuppression,
+                                   boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    public boolean needReCreateLabel() {
+        return reCreateLabel;
     }
 }

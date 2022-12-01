@@ -143,7 +143,7 @@ public class DorisCopyIntoObserver {
         if (statusCode != 200) {
             String result = response.getEntity() == null ? null : EntityUtils.toString(response.getEntity());
             LOG.error("upload file {} error, response {}", fileName, result);
-            throw new DorisWriterExcetion("upload file error: " + fileName);
+            throw new DorisWriterException("upload file error: " + fileName,true);
         }
     }
 
@@ -198,14 +198,14 @@ public class DorisCopyIntoObserver {
         String loadResult = "";
         if (statusCode != 200) {
             LOG.warn("commit failed with status {} {}, reason {}", statusCode, hostPort, reasonPhrase);
-            throw new DorisWriterExcetion("commit error with file: " + fileName);
+            throw new DorisWriterException("commit error with file: " + fileName,true);
         } else if (response.getEntity() != null){
             loadResult = EntityUtils.toString(response.getEntity());
             boolean success = handleCommitResponse(loadResult);
             if(success){
                 LOG.info("commit success cost {}ms, response is {}", System.currentTimeMillis() - start, loadResult);
             }else{
-                throw new DorisWriterExcetion("commit fail");
+                throw new DorisWriterException("commit fail",true);
             }
         }
     }

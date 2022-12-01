@@ -97,7 +97,7 @@ public class DorisWriterManager {
                 flush(label, false);
             }
         } catch (Exception e) {
-            throw new DorisWriterExcetion("Writing records to Doris failed.", e);
+            throw new RuntimeException("Writing records to selectdb failed.", e);
         }
     }
 
@@ -187,7 +187,7 @@ public class DorisWriterManager {
                 if (i >= options.getMaxRetries()) {
                     throw new RuntimeException(e);
                 }
-                if (e instanceof DorisWriterExcetion) {
+                if (e instanceof DorisWriterException && (( DorisWriterException )e).needReCreateLabel()) {
                     String newLabel = createBatchLabel();
                     LOG.warn(String.format("Batch label changed from [%s] to [%s]", flushData.getLabel(), newLabel));
                     flushData.setLabel(newLabel);

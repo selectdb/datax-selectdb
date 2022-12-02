@@ -36,10 +36,10 @@ import java.util.List;
 /**
  * jdbc util
  */
-public class DorisUtil {
-    private static final Logger LOG = LoggerFactory.getLogger(DorisUtil.class);
+public class SelectdbUtil {
+    private static final Logger LOG = LoggerFactory.getLogger(SelectdbUtil.class);
 
-    private DorisUtil() {}
+    private SelectdbUtil() {}
 
     public static List<String> getDorisTableColumns( Connection conn, String databaseName, String tableName) {
         String currentSql = String.format("SELECT COLUMN_NAME FROM `information_schema`.`COLUMNS` WHERE `TABLE_SCHEMA` = '%s' AND `TABLE_NAME` = '%s' ORDER BY `ORDINAL_POSITION` ASC;", databaseName, tableName);
@@ -91,7 +91,7 @@ public class DorisUtil {
     public static void preCheckPrePareSQL( Keys options) {
         String table = options.getTable();
         List<String> preSqls = options.getPreSqlList();
-        List<String> renderedPreSqls = DorisUtil.renderPreOrPostSqls(preSqls, table);
+        List<String> renderedPreSqls = SelectdbUtil.renderPreOrPostSqls(preSqls, table);
         if (null != renderedPreSqls && !renderedPreSqls.isEmpty()) {
             LOG.info("Begin to preCheck preSqls:[{}].", String.join(";", renderedPreSqls));
             for (String sql : renderedPreSqls) {
@@ -107,7 +107,7 @@ public class DorisUtil {
     public static void preCheckPostSQL( Keys options) {
         String table = options.getTable();
         List<String> postSqls = options.getPostSqlList();
-        List<String> renderedPostSqls = DorisUtil.renderPreOrPostSqls(postSqls, table);
+        List<String> renderedPostSqls = SelectdbUtil.renderPreOrPostSqls(postSqls, table);
         if (null != renderedPostSqls && !renderedPostSqls.isEmpty()) {
             LOG.info("Begin to preCheck postSqls:[{}].", String.join(";", renderedPostSqls));
             for(String sql : renderedPostSqls) {

@@ -55,8 +55,8 @@ public class HttpPutBuilder {
     }
 
     public HttpPut build() {
-        DorisUtil.checkNotNull(url);
-        DorisUtil.checkNotNull(httpEntity);
+        SelectdbUtil.checkNotNull(url);
+        SelectdbUtil.checkNotNull(httpEntity);
         HttpPut put = new HttpPut(url);
         header.forEach(put::setHeader);
         put.setEntity(httpEntity);

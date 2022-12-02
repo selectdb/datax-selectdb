@@ -19,7 +19,7 @@ package com.alibaba.datax.plugin.writer.selectdbwriter;
 
 import com.alibaba.datax.common.element.Column;
 
-public class DorisBaseCodec {
+public class SelectdbBaseCodec {
     protected String convertionField( Column col) {
         if (null == col.getRawData() || Column.Type.NULL == col.getType()) {
             return null;

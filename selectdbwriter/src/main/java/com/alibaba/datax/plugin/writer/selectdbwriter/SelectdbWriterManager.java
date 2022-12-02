@@ -33,11 +33,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class DorisWriterManager {
+public class SelectdbWriterManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DorisWriterManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SelectdbWriterManager.class);
 
-    private final DorisCopyIntoObserver visitor;
+    private final SelectdbCopyIntoObserver visitor;
     private final Keys options;
     private final List<byte[]> buffer = new ArrayList<>();
     private int batchCount = 0;
@@ -48,9 +48,9 @@ public class DorisWriterManager {
     private ScheduledExecutorService scheduler;
     private ScheduledFuture<?> scheduledFuture;
 
-    public DorisWriterManager(Keys options) {
+    public SelectdbWriterManager(Keys options) {
         this.options = options;
-        this.visitor = new DorisCopyIntoObserver(options);
+        this.visitor = new SelectdbCopyIntoObserver(options);
         flushQueue = new LinkedBlockingDeque<>(options.getFlushQueueLength());
         this.startScheduler();
         this.startAsyncFlushing();
@@ -60,7 +60,7 @@ public class DorisWriterManager {
         stopScheduler();
         this.scheduler = Executors.newScheduledThreadPool(1, new BasicThreadFactory.Builder().namingPattern("Doris-interval-flush").daemon(true).build());
         this.scheduledFuture = this.scheduler.schedule(() -> {
-            synchronized (DorisWriterManager.this) {
+            synchronized (SelectdbWriterManager.this) {
                 if (!closed) {
                     try {
                         String label = createBatchLabel();
@@ -187,7 +187,7 @@ public class DorisWriterManager {
                 if (i >= options.getMaxRetries()) {
                     throw new RuntimeException(e);
                 }
-                if (e instanceof DorisWriterException && (( DorisWriterException )e).needReCreateLabel()) {
+                if (e instanceof SelectdbWriterException && ((SelectdbWriterException)e).needReCreateLabel()) {
                     String newLabel = createBatchLabel();
                     LOG.warn(String.format("Batch label changed from [%s] to [%s]", flushData.getLabel(), newLabel));
                     flushData.setLabel(newLabel);

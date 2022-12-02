@@ -18,27 +18,33 @@
 package com.alibaba.datax.plugin.writer.selectdbwriter;
 
 import com.alibaba.datax.common.element.Record;
+import com.alibaba.fastjson.JSON;
 
-public class DorisCsvCodec extends DorisBaseCodec implements DorisCodec {
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class SelectdbJsonCodec extends SelectdbBaseCodec implements SelectdbCodec {
 
     private static final long serialVersionUID = 1L;
 
-    private final String columnSeparator;
+    private final List<String> fieldNames;
 
-    public DorisCsvCodec ( String sp) {
-        this.columnSeparator = DelimiterParser.parse(sp, "\t");
+    public SelectdbJsonCodec(List<String> fieldNames) {
+        this.fieldNames = fieldNames;
     }
 
     @Override
     public String codec( Record row) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < row.getColumnNumber(); i++) {
-            String value = convertionField(row.getColumn(i));
-            sb.append(null == value ? "\\N" : value);
-            if (i < row.getColumnNumber() - 1) {
-                sb.append(columnSeparator);
-            }
+        if (null == fieldNames) {
+            return "";
         }
-        return sb.toString();
+        Map<String, Object> rowMap = new HashMap<> (fieldNames.size());
+        int idx = 0;
+        for (String fieldName : fieldNames) {
+            rowMap.put(fieldName, convertionField(row.getColumn(idx)));
+            idx++;
+        }
+        return JSON.toJSONString(rowMap);
     }
 }

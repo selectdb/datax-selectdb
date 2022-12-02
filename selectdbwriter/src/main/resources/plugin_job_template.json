@@ -6,7 +6,6 @@
     "column": [],
     "preSql": [],
     "postSql": [],
-    "beLoadUrl": [],
     "loadUrl": [],
     "loadProps": {},
     "connection": [

@@ -43,8 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class DorisCopyIntoObserver {
-    private static final Logger LOG = LoggerFactory.getLogger(DorisCopyIntoObserver.class);
+public class SelectdbCopyIntoObserver {
+    private static final Logger LOG = LoggerFactory.getLogger(SelectdbCopyIntoObserver.class);
 
     private Keys options;
     private long pos;
@@ -60,7 +60,7 @@ public class DorisCopyIntoObserver {
     private static final Pattern COMMITTED_PATTERN = Pattern.compile("errCode = 2, detailMessage = No files can be copied, matched (\\d+) files, " + "filtered (\\d+) files because files may be loading or loaded");
 
 
-    public DorisCopyIntoObserver(Keys options) {
+    public SelectdbCopyIntoObserver(Keys options) {
         this.options = options;
         this.httpClient = httpClientBuilder.build();
 
@@ -143,7 +143,7 @@ public class DorisCopyIntoObserver {
         if (statusCode != 200) {
             String result = response.getEntity() == null ? null : EntityUtils.toString(response.getEntity());
             LOG.error("upload file {} error, response {}", fileName, result);
-            throw new DorisWriterException("upload file error: " + fileName,true);
+            throw new SelectdbWriterException("upload file error: " + fileName,true);
         }
     }
 
@@ -198,14 +198,14 @@ public class DorisCopyIntoObserver {
         String loadResult = "";
         if (statusCode != 200) {
             LOG.warn("commit failed with status {} {}, reason {}", statusCode, hostPort, reasonPhrase);
-            throw new DorisWriterException("commit error with file: " + fileName,true);
+            throw new SelectdbWriterException("commit error with file: " + fileName,true);
         } else if (response.getEntity() != null){
             loadResult = EntityUtils.toString(response.getEntity());
             boolean success = handleCommitResponse(loadResult);
             if(success){
                 LOG.info("commit success cost {}ms, response is {}", System.currentTimeMillis() - start, loadResult);
             }else{
-                throw new DorisWriterException("commit fail",true);
+                throw new SelectdbWriterException("commit fail",true);
             }
         }
     }

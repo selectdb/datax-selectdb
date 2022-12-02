@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * doris data writer
  */
-public class DorisWriter extends Writer {
+public class SelectdbWriter extends Writer {
 
     public static class Job extends Writer.Job {
 
@@ -53,8 +53,8 @@ public class DorisWriter extends Writer {
         @Override
         public void preCheck(){
             this.init();
-            DorisUtil.preCheckPrePareSQL(options);
-            DorisUtil.preCheckPostSQL(options);
+            SelectdbUtil.preCheckPrePareSQL(options);
+            SelectdbUtil.preCheckPostSQL(options);
         }
 
         @Override
@@ -62,11 +62,11 @@ public class DorisWriter extends Writer {
             String username = options.getUsername();
             String password = options.getPassword();
             String jdbcUrl = options.getJdbcUrl();
-            List<String> renderedPreSqls = DorisUtil.renderPreOrPostSqls(options.getPreSqlList(), options.getTable());
+            List<String> renderedPreSqls = SelectdbUtil.renderPreOrPostSqls(options.getPreSqlList(), options.getTable());
             if (null != renderedPreSqls && !renderedPreSqls.isEmpty()) {
                 Connection conn = DBUtil.getConnection(DataBaseType.MySql, jdbcUrl, username, password);
                 LOG.info("Begin to execute preSqls:[{}]. context info:{}.", String.join(";", renderedPreSqls), jdbcUrl);
-                DorisUtil.executeSqls(conn, renderedPreSqls);
+                SelectdbUtil.executeSqls(conn, renderedPreSqls);
                 DBUtil.closeDBResources(null, null, conn);
             }
         }
@@ -85,11 +85,11 @@ public class DorisWriter extends Writer {
             String username = options.getUsername();
             String password = options.getPassword();
             String jdbcUrl = options.getJdbcUrl();
-            List<String> renderedPostSqls = DorisUtil.renderPreOrPostSqls(options.getPostSqlList(), options.getTable());
+            List<String> renderedPostSqls = SelectdbUtil.renderPreOrPostSqls(options.getPostSqlList(), options.getTable());
             if (null != renderedPostSqls && !renderedPostSqls.isEmpty()) {
                 Connection conn = DBUtil.getConnection(DataBaseType.MySql, jdbcUrl, username, password);
                 LOG.info("Start to execute preSqls:[{}]. context info:{}.", String.join(";", renderedPostSqls), jdbcUrl);
-                DorisUtil.executeSqls(conn, renderedPostSqls);
+                SelectdbUtil.executeSqls(conn, renderedPostSqls);
                 DBUtil.closeDBResources(null, null, conn);
             }
         }
@@ -101,20 +101,20 @@ public class DorisWriter extends Writer {
     }
 
     public static class Task extends Writer.Task {
-        private DorisWriterManager writerManager;
+        private SelectdbWriterManager writerManager;
         private Keys options;
-        private DorisCodec rowCodec;
+        private SelectdbCodec rowCodec;
 
         @Override
         public void init() {
             options = new Keys (super.getPluginJobConf());
             if (options.isWildcardColumn()) {
                 Connection conn = DBUtil.getConnection(DataBaseType.MySql, options.getJdbcUrl(), options.getUsername(), options.getPassword());
-                List<String> columns = DorisUtil.getDorisTableColumns(conn, options.getDatabase(), options.getTable());
+                List<String> columns = SelectdbUtil.getDorisTableColumns(conn, options.getDatabase(), options.getTable());
                 options.setInfoCchemaColumns(columns);
             }
-            writerManager = new DorisWriterManager(options);
-            rowCodec = DorisCodecFactory.createCodec(options);
+            writerManager = new SelectdbWriterManager(options);
+            rowCodec = SelectdbCodecFactory.createCodec(options);
         }
 
         @Override

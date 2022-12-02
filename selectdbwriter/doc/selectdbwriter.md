@@ -382,13 +382,13 @@ c.再次尝试编译。
 
     - 描述：每批次导入数据失败后的重试次数。
     - 必选：否
-    - 默认值：0
+    - 默认值：3
 
 * **labelPrefix**
 
     - 描述：每批次上传文件的 label 前缀。最终的 label 将有 `labelPrefix + UUID` 组成全局唯一的 label，确保数据不会重复导入
     - 必选：否
-    - 默认值：`datax_select_writer_`
+    - 默认值：`datax_selectdb_writer_`
 
 * **loadProps**
 

@@ -17,20 +17,11 @@
 
 package com.alibaba.datax.plugin.writer.selectdbwriter;
 
-import java.util.Map;
+import com.alibaba.datax.common.element.Record;
 
-public class DorisCodecFactory {
-    public DorisCodecFactory (){
+import java.io.Serializable;
 
-    }
-    public static DorisCodec createCodec( Keys writerOptions) {
-        if ( Keys.StreamLoadFormat.CSV.equals(writerOptions.getStreamLoadFormat())) {
-            Map<String, Object> props = writerOptions.getLoadProps();
-            return new DorisCsvCodec (null == props || !props.containsKey("file.column_separator") ? null : String.valueOf(props.get("file.column_separator")));
-        }
-        if ( Keys.StreamLoadFormat.JSON.equals(writerOptions.getStreamLoadFormat())) {
-            return new DorisJsonCodec (writerOptions.getColumns());
-        }
-        throw new RuntimeException("Failed to create row serializer, unsupported `format` from stream load properties.");
-    }
+public interface SelectdbCodec extends Serializable {
+
+    String codec( Record row);
 }

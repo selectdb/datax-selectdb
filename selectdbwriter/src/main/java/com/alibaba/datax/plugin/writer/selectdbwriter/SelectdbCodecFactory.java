@@ -17,34 +17,20 @@
 
 package com.alibaba.datax.plugin.writer.selectdbwriter;
 
-import com.alibaba.datax.common.element.Record;
-import com.alibaba.fastjson.JSON;
-
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class DorisJsonCodec extends DorisBaseCodec implements DorisCodec {
+public class SelectdbCodecFactory {
+    public SelectdbCodecFactory(){
 
-    private static final long serialVersionUID = 1L;
-
-    private final List<String> fieldNames;
-
-    public DorisJsonCodec ( List<String> fieldNames) {
-        this.fieldNames = fieldNames;
     }
-
-    @Override
-    public String codec( Record row) {
-        if (null == fieldNames) {
-            return "";
+    public static SelectdbCodec createCodec(Keys writerOptions) {
+        if ( Keys.StreamLoadFormat.CSV.equals(writerOptions.getStreamLoadFormat())) {
+            Map<String, Object> props = writerOptions.getLoadProps();
+            return new SelectdbCsvCodec(null == props || !props.containsKey("file.column_separator") ? null : String.valueOf(props.get("file.column_separator")));
         }
-        Map<String, Object> rowMap = new HashMap<> (fieldNames.size());
-        int idx = 0;
-        for (String fieldName : fieldNames) {
-            rowMap.put(fieldName, convertionField(row.getColumn(idx)));
-            idx++;
+        if ( Keys.StreamLoadFormat.JSON.equals(writerOptions.getStreamLoadFormat())) {
+            return new SelectdbJsonCodec(writerOptions.getColumns());
         }
-        return JSON.toJSONString(rowMap);
+        throw new RuntimeException("Failed to create row serializer, unsupported `format` from stream load properties.");
     }
 }

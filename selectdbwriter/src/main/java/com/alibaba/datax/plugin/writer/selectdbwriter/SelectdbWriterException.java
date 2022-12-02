@@ -18,35 +18,35 @@
 package com.alibaba.datax.plugin.writer.selectdbwriter;
 
 
-public class DorisWriterException extends RuntimeException {
+public class SelectdbWriterException extends RuntimeException {
 
     private boolean reCreateLabel;
 
 
-    public DorisWriterException() {
+    public SelectdbWriterException() {
         super();
     }
 
-    public DorisWriterException(String message) {
+    public SelectdbWriterException(String message) {
         super(message);
     }
 
-    public DorisWriterException(String message, boolean reCreateLabel) {
+    public SelectdbWriterException(String message, boolean reCreateLabel) {
         super(message);
         this.reCreateLabel = reCreateLabel;
     }
 
-    public DorisWriterException(String message, Throwable cause) {
+    public SelectdbWriterException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public DorisWriterException(Throwable cause) {
+    public SelectdbWriterException(Throwable cause) {
         super(cause);
     }
 
-    protected DorisWriterException(String message, Throwable cause,
-                                   boolean enableSuppression,
-                                   boolean writableStackTrace) {
+    protected SelectdbWriterException(String message, Throwable cause,
+                                      boolean enableSuppression,
+                                      boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 

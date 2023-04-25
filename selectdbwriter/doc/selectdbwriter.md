@@ -394,7 +394,7 @@ c.再次尝试编译。
 
     - 描述：COPY INOT 的请求参数
 
-      这里包括导入的数据格式：file.type等，导入数据格式默认我们使用csv，支持JSON，具体可以参照下面类型转换部分
+      这里包括导入的数据格式：file.type等，导入数据格式默认我们使用JSON，支持CSV，具体可以参照下面类型转换部分
 
     - 必选：否
 
@@ -427,21 +427,20 @@ c.再次尝试编译。
 
 ### 类型转换
 
-默认传入的数据均会被转为字符串，并以`\t`作为列分隔符，`\n`作为行分隔符，组成`csv`文件进行Selectdb导入操作。
-
-默认是csv格式导入，如需更改列分隔符， 则正确配置 `loadProps` 即可：
+默认是JSON格式导入，可不配置，也可以配置 `loadProps` 如下：
 
 ```json
 "loadProps": {
-    "file.column_separator": "\\x01",
-    "file.line_delimiter": "\\x02"
+        "file.type": "json",
+        "file.strip_outer_array": true
 }
 ```
 
-如需更改导入格式为`json`， 则正确配置 `loadProps` 即可：
+如需更改导入格式为`csv`，如需更改列分隔符， 则正确配置 `loadProps` 即可：
 ```json
 "loadProps": {
-    "file.type": "json",
-    "file.strip_outer_array": true
+        "file.type":"csv",
+        "file.column_separator": "\\x01",
+        "file.line_delimiter": "\\x02"
 }
 ```

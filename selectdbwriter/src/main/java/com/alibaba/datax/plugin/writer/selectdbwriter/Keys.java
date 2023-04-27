@@ -140,7 +140,9 @@ public class Keys implements Serializable {
 
     public Map<String, Object> getLoadProps() {
 
-        return options.getMap(LOAD_PROPS) == null || options.getMap(LOAD_PROPS).size() == 0 ? copyDefaults() : options.getMap(LOAD_PROPS) ;
+        return options.getMap(LOAD_PROPS) == null || options.getMap(LOAD_PROPS).size() == 0 ||
+                options.getMap(LOAD_PROPS).get("file.type") == null || options.getMap(LOAD_PROPS).get("file.type").equals("") ||
+                options.getMap(LOAD_PROPS).get("file.type").toString().toLowerCase().equals("json") ? copyDefaults() : options.getMap(LOAD_PROPS);
     }
 
     public int getMaxRetries() {
@@ -203,6 +205,9 @@ public class Keys implements Serializable {
 
     private Map<String,Object> copyDefaults() {
         Map<String,Object> copyMap = new HashMap<>();
+        if (options.getMap(LOAD_PROPS).get("columns") != null) {
+            copyMap.put("columns", options.getMap(LOAD_PROPS).get("columns"));
+        }
         copyMap.put("file.type", "json");
         copyMap.put("file.strip_outer_array", "true");
         return copyMap;

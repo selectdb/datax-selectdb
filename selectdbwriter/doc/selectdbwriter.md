@@ -444,3 +444,12 @@ c.再次尝试编译。
         "file.line_delimiter": "\\x02"
 }
 ```
+bitmap类型写入配置
+```json
+"loadProps": {
+        "file.type":"csv",
+        "file.column_separator": "\\x01",
+        "file.line_delimiter": "\\x02",
+        "columns": "k1,k2,to_bitmap(k3)"
+}
+```

@@ -57,7 +57,7 @@ public class SelectdbCopyIntoObserver {
     private CloseableHttpClient httpClient;
     private static final String UPLOAD_URL_PATTERN = "%s/copy/upload";
     private static final String COMMIT_PATTERN = "%s/copy/query";
-    private static final Pattern COMMITTED_PATTERN = Pattern.compile("errCode = 2, detailMessage = No files can be copied, matched (\\d+) files, " + "filtered (\\d+) files because files may be loading or loaded");
+    private static final Pattern COMMITTED_PATTERN = Pattern.compile("errCode = 2, detailMessage = No files can be copied.*");
 
 
     public SelectdbCopyIntoObserver(Keys options) {
@@ -203,7 +203,7 @@ public class SelectdbCopyIntoObserver {
             loadResult = EntityUtils.toString(response.getEntity());
             boolean success = handleCommitResponse(loadResult);
             if(success){
-                LOG.info("commit success cost {}ms, response is {}", System.currentTimeMillis() - start, loadResult);
+                LOG.info("commit success cost {}ms, response is {}, filename is {}", System.currentTimeMillis() - start, loadResult,fileName);
             }else{
                 throw new SelectdbWriterException("commit fail",true);
             }
@@ -219,7 +219,7 @@ public class SelectdbCopyIntoObserver {
                 return false;
             }else{
                 Map<String, String> result = dataResp.getResult();
-                if(!result.get("state").equals("FINISHED") && !isCommitted(result.get("msg"))){
+                if(SelectdbUtil.isNullOrEmpty(result) || !result.get("state").equals("FINISHED") && !isCommitted(result.get("msg"))){
                     LOG.error("copy into load failed, reason:{}", loadResult);
                     return false;
                 }else{

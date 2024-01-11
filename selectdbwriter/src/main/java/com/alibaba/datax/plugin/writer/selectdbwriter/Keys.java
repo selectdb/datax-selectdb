@@ -202,14 +202,4 @@ public class Keys implements Serializable {
             options.getNecessaryValue(optionKey, DBUtilErrorCode.REQUIRED_VALUE);
         }
     }
-
-    private Map<String,Object> copyDefaults() {
-        Map<String,Object> copyMap = new HashMap<>();
-        if (options.getMap(LOAD_PROPS).get("columns") != null) {
-            copyMap.put("columns", options.getMap(LOAD_PROPS).get("columns"));
-        }
-        copyMap.put("file.type", "json");
-        copyMap.put("file.strip_outer_array", "true");
-        return copyMap;
-    }
 }
